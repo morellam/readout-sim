@@ -5,6 +5,7 @@
 
 #include "G4Material.hh"
 #include "G4LogicalVolume.hh"
+#include "G4GenericMessenger.hh"
 
 class DetectorMessenger;
 
@@ -15,20 +16,21 @@ class ReadoutSimDetectorConstruction : public G4VUserDetectorConstruction
         ~ReadoutSimDetectorConstruction();
 
         virtual G4VPhysicalVolume *Construct(); 
-        // virtual void ConstructSDandField();
 
-        void SetGeometry(G4String name) {fGeometryName = name;};
+        // void SetGeometry(G4String name) {fGeometryName = name;};
     
     private:
         void DefineMaterials();
+        void DefineCommands();
         void SetOpticalProperties();
+        void SetSpace(G4int);
 
         G4VPhysicalVolume* SetupPanelOnly();
         G4VPhysicalVolume* SetupPanelWithCladding();
         G4VPhysicalVolume* SetupBaselineDesign();
         G4VPhysicalVolume* SetupBaselineCladding();
 
-        G4String fGeometryName;
+        // G4String fGeometryName;
 
         G4LogicalVolume *fRightPENLayerLogical, *fLeftPENLayerLogical;
         G4LogicalVolume *fTopPENLayerLogical, *fBotPENLayerLogical;
@@ -36,9 +38,9 @@ class ReadoutSimDetectorConstruction : public G4VUserDetectorConstruction
         G4Material *PMMA, *PEN;
         G4Material *innerCladdingMaterial, *outerCladdingMaterial;
 
-        G4MaterialPropertiesTable *pmmaMPT, *penMPT, *larMPT, *innerCladdingMPT, *outerCladdingMPT;
+        G4double space;
 
-        DetectorMessenger *fDetectorMessenger;
+        G4MaterialPropertiesTable *pmmaMPT, *penMPT, *larMPT, *innerCladdingMPT, *outerCladdingMPT;
 };
 
 #endif
