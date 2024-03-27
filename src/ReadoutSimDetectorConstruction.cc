@@ -19,7 +19,6 @@ ReadoutSimDetectorConstruction::ReadoutSimDetectorConstruction()
     innerCladdingMPT = new G4MaterialPropertiesTable();
     outerCladdingMPT = new G4MaterialPropertiesTable();
 
-    // fDetectorMessenger = new DetectorMessenger(this);
     DefineCommands();
 }
 
@@ -31,13 +30,7 @@ ReadoutSimDetectorConstruction::~ReadoutSimDetectorConstruction()
 G4VPhysicalVolume *ReadoutSimDetectorConstruction::Construct() 
 {
     DefineMaterials();
-
     SetOpticalProperties();
-
-    // if (fGeometryName == "baseline")                 {return SetupBaselineDesign();}
-    // else if (fGeometryName == "alternative")         {return SetupPanelOnly();}
-    // else if (fGeometryName == "baselineCladding")    {return SetupBaselineCladding();}
-    // else if (fGeometryName == "alternativeCladding") {return SetupPanelWithCladding();}
 
     return SetupBaselineDesign();
     // return SetupPanelOnly();
@@ -128,6 +121,17 @@ void ReadoutSimDetectorConstruction::SetSpace(G4int val)
     if(val == 1) space = 2.*cm; 
     else space = 0.*cm;
 }
+
+void ReadoutSimDetectorConstruction::SetWLSBack(G4int val)
+{
+    if(val == 1){
+        WLS_y = 2;
+        centerGuide = 0;
+    }
+}
+
+
+
 // auto ReadoutSimDetectorConstruction::SetupPanelOnly() -> G4VPhysicalVolume*
 // {
 //     //
@@ -322,8 +326,8 @@ auto ReadoutSimDetectorConstruction::SetupBaselineDesign() -> G4VPhysicalVolume*
     // PEN layers around light guide
     //
     G4double pen_x = panel_x; // 1m 
-    G4double pen_y = 0.005*m + layerThickness;  // 1cm (guide) + PEN foil thickness
-    G4double pen_z = 0.05*m + layerThickness*2; // 10cm (guide) + PEN foil thickness on top and bottom of the guide
+    G4double pen_y = 0.005*m + layerThickness * WLS_y;  // 1cm (guide) + PEN foil thickness (WLS_y is 1 for only front, 2 for front and back of guide covered with WLS)
+    G4double pen_z = 0.05*m + layerThickness * 2; // 10cm (guide) + PEN foil thickness on top and bottom of the guide
     G4Box* penSolid = new G4Box("PENFoil", pen_x, pen_y, pen_z);
     auto* fPENLogical = new G4LogicalVolume(penSolid, PEN, "PEN_log");
     auto* fPENPhysical = new G4PVPlacement(nullptr, G4ThreeVector(0., panel_y + pen_y + space, 0.), fPENLogical, "PEN_phys", fWorldLogical, false, 0);
@@ -336,7 +340,7 @@ auto ReadoutSimDetectorConstruction::SetupBaselineDesign() -> G4VPhysicalVolume*
     G4double guide_z = 0.05*m;   // 10cm
     G4Box* guideSolid = new G4Box("Guide", guide_x, guide_y, guide_z);
     auto* fGuideLogical = new G4LogicalVolume(guideSolid, PMMA, "Guide_log");
-    auto* fGuidePhysical = new G4PVPlacement(nullptr, G4ThreeVector(0., -layerThickness, 0.), fGuideLogical, "Guide_phys", fPENLogical, false, 0);
+    auto* fGuidePhysical = new G4PVPlacement(nullptr, G4ThreeVector(0., -layerThickness * centerGuide, 0.), fGuideLogical, "Guide_phys", fPENLogical, false, 0);
 
     auto* yellowVisAtt = new G4VisAttributes(G4Colour::Yellow());
     yellowVisAtt->SetVisibility(true);
@@ -505,10 +509,17 @@ void ReadoutSimDetectorConstruction::DefineCommands()
     auto fDetectorMessenger = new G4GenericMessenger(this, "/RS/guide/", "Commands for controlling detector setup");
 
     // switch command
-    auto& spaceGuideCmd = fDetectorMessenger->DeclareMethod("setSpaceGuide", &ReadoutSimDetectorConstruction::SetSpace)
+    fDetectorMessenger->DeclareMethod("setSpaceGuide", &ReadoutSimDetectorConstruction::SetSpace)
     .SetGuidance("Decide whether you want some space between light guide and moderator")
     .SetGuidance("0 = Light guide is attached to PMMA panel")
     .SetGuidance("1 = There is some space between light guide and PMMA panel")
+    .SetCandidates("0 1")
+    .SetDefaultValue("0");
+
+    fDetectorMessenger->DeclareMethod("setWLSBack", &ReadoutSimDetectorConstruction::SetWLSBack)
+    .SetGuidance("Decide whether you want WLS also on the back of the light guide (i.e. between light guide and PMMA panel)")
+    .SetGuidance("0 = without WLS on light guide's back")
+    .SetGuidance("1 = with WLS on light guide's back")
     .SetCandidates("0 1")
     .SetDefaultValue("0");
 

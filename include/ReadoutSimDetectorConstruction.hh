@@ -24,6 +24,7 @@ class ReadoutSimDetectorConstruction : public G4VUserDetectorConstruction
         void DefineCommands();
         void SetOpticalProperties();
         void SetSpace(G4int);
+        void SetWLSBack(G4int);
 
         G4VPhysicalVolume* SetupPanelOnly();
         G4VPhysicalVolume* SetupPanelWithCladding();
@@ -39,6 +40,8 @@ class ReadoutSimDetectorConstruction : public G4VUserDetectorConstruction
         G4Material *innerCladdingMaterial, *outerCladdingMaterial;
 
         G4double space;
+        G4int WLS_y = 1;
+        G4int centerGuide = 1;
 
         G4MaterialPropertiesTable *pmmaMPT, *penMPT, *larMPT, *innerCladdingMPT, *outerCladdingMPT;
 };
