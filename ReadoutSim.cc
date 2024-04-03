@@ -23,23 +23,11 @@ int main(int argc,char** argv)
     G4UIExecutive* ui = nullptr;
     if (argc == 1) ui = new G4UIExecutive(argc,argv);
 
-    // Construct the default run manager
-    //
-    // #ifdef G4MULTITHREADED
-    //     G4MTRunManager * runManager = new G4MTRunManager;
-    // #else
-    //     G4RunManager * runManager = new G4RunManager;
-    // #endif
-
-    #ifdef G4MULTITHREADED
     G4MTRunManager * runManager = new G4MTRunManager;
-    // G4int nThreads = std::min(G4Threading::G4GetNumberOfCores(), 4);
-    // runManager->SetNumberOfThreads(nThreads);
-    // G4cout << "===== OpNovice2 is started with "
-    //         <<  runManager->GetNumberOfThreads() << " threads =====" << G4endl;
-    #else
-    G4RunManager * runManager = new G4RunManager;
-    #endif
+    G4int nThreads = std::min(G4Threading::G4GetNumberOfCores(), 1);
+    runManager->SetNumberOfThreads(nThreads);
+    G4cout << "===== ReadoutSim is started with "
+            <<  runManager->GetNumberOfThreads() << " threads =====" << G4endl;
 
     // Set mandatory initialization classes
     //
