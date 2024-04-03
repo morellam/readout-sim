@@ -23,11 +23,11 @@ ReadoutSimPrimaryGenerator::~ReadoutSimPrimaryGenerator()
 
 void ReadoutSimPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
 {
-    Run* run = static_cast<Run*>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
+    // Run* run = static_cast<Run*>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
-    G4AnalysisManager *man = G4AnalysisManager::Instance();
+    // G4AnalysisManager *man = G4AnalysisManager::Instance();
 
-    run->AddToTotal();
+    // run->AddToTotal();
 
     // set opticalphoton as primary particle
     G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
@@ -47,8 +47,19 @@ void ReadoutSimPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
     // G4double yPos = yPosGenerator->Uniform(-0.5, 0.5);
     // G4double zPos = zPosGenerator->Uniform(-1.5, 1.5);
 
-    G4double xPos = 0., yPos = 0., zPos = 0.;
-    G4double xMom = 0., yMom = 0., zMom = 0.;
+    G4double xPos, yPos, zPos;
+    G4double xMom, yMom, zMom;
+
+    xPos = xPosGenerator->Uniform(-50., 50.);
+    yPos = -6;
+    zPos = zPosGenerator->Uniform(-5., 5.);
+
+    u = thetaGenerator->Uniform(-1,1);
+    v = phiGenerator->Uniform(-pi/2, pi/2);
+
+    xMom = sqrt(1-u*u) * sin(v);
+    yMom = sqrt(1-u*u) * cos(v);
+    zMom = u;
 
     // // Baseline Design
     // if (surface < 0.143)
@@ -116,20 +127,11 @@ void ReadoutSimPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
     //     xMom = -xMom;
     // } 
 
-
-    xPos = 0.; 
-    yPos = 0.;
-    zPos = -1.45;
-
-    xMom = 0.;
-    yMom = 0.;
-    zMom = 1.;
-
-
-    G4ThreeVector position(xPos*m, yPos*m, zPos*m);
+    G4ThreeVector position(xPos*cm, yPos*cm, zPos*cm);
     G4ThreeVector momentum(xMom, yMom, zMom);
     
-    G4double energy = 2.88 * eV; // optical photon @ 430nm
+    // G4double energy = 2.88 * eV; // optical photon @ 430nm
+    G4double energy = 9.69 * eV; // optical photon @ 128nm
 
     fParticleGun->SetParticlePosition(position);
     fParticleGun->SetParticleMomentumDirection(momentum);
@@ -139,14 +141,6 @@ void ReadoutSimPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
     SetOptPhotonPolar();
     
     fParticleGun->GeneratePrimaryVertex(anEvent);
-
-    man->FillNtupleDColumn(0, position[0] / m);
-    man->FillNtupleDColumn(1, position[1] / m);
-    man->FillNtupleDColumn(2, position[2] / m);
-    man->FillNtupleDColumn(3, momentum[0]);
-    man->FillNtupleDColumn(4, momentum[1]);
-    man->FillNtupleDColumn(5, momentum[2]);
-    man->AddNtupleRow(0);
 }
 
 void ReadoutSimPrimaryGenerator::SetOptPhotonPolar()

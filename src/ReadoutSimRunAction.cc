@@ -18,7 +18,7 @@ G4Run* ReadoutSimRunAction::GenerateRun()
 
 void ReadoutSimRunAction::BeginOfRunAction(const G4Run *aRun)
 {
-    G4cout << "### Run " << aRun->GetRunID() << " start." << G4endl;
+    // G4cout << "### Run " << aRun->GetRunID() << " start." << G4endl;
 
     G4AnalysisManager *man = G4AnalysisManager::Instance();
 
@@ -39,19 +39,19 @@ void ReadoutSimRunAction::BeginOfRunAction(const G4Run *aRun)
     man->CreateNtupleDColumn("xPhotonDirection");
     man->CreateNtupleDColumn("yPhotonDirection");
     man->CreateNtupleDColumn("zPhotonDirection");
-    man->CreateNtupleIColumn("surface");
-    man->CreateNtupleIColumn("hitSurface"); 
+    man->CreateNtupleIColumn("photonTrackID");
+    man->CreateNtupleSColumn("finalVolume"); 
     man->CreateNtupleDColumn("stepLength");
     man->CreateNtupleDColumn("G4TrackLength");
 
     man->FinishNtuple(0);
 
-    G4cout << "Ho creato la Ntupla" << G4endl;
+    // G4cout << "Ho creato la Ntupla" << G4endl;
 }
 
 void ReadoutSimRunAction::EndOfRunAction(const G4Run *aRun)
 {
-    if (isMaster) fRun->EndOfRun();
+    // if (isMaster) fRun->EndOfRun();
 
     G4AnalysisManager *man = G4AnalysisManager::Instance();
 

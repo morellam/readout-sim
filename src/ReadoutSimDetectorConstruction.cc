@@ -24,7 +24,6 @@ ReadoutSimDetectorConstruction::ReadoutSimDetectorConstruction()
 
 ReadoutSimDetectorConstruction::~ReadoutSimDetectorConstruction()
 {
-    // delete fDetectorMessenger;
 }
 
 G4VPhysicalVolume *ReadoutSimDetectorConstruction::Construct() 

@@ -29,21 +29,21 @@ void ReadoutSimSteppingAction::UserSteppingAction(const G4Step* step)
 {
     // static G4ParticleDefinition* opticalphoton = 
     //             G4OpticalPhoton::OpticalPhotonDefinition();
-    G4AnalysisManager* analysisMan = G4AnalysisManager::Instance();
+    // G4AnalysisManager* analysisMan = G4AnalysisManager::Instance();
 
-    Run* run = static_cast<Run*>(
-               G4RunManager::GetRunManager()->GetNonConstCurrentRun());
+    // Run* run = static_cast<Run*>(
+    //            G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
-    G4Track* track = step->GetTrack();
-    G4StepPoint* endPoint   = step->GetPostStepPoint();
-    G4StepPoint* startPoint = step->GetPreStepPoint();
+    // G4Track* track = step->GetTrack();
+    // G4StepPoint* endPoint   = step->GetPostStepPoint();
+    // G4StepPoint* startPoint = step->GetPreStepPoint();
 
-    G4String particleName = track->GetDynamicParticle()->GetParticleDefinition()->GetParticleName();
+    // G4String particleName = track->GetDynamicParticle()->GetParticleDefinition()->GetParticleName();
 
-    G4String startVolumeName = startPoint->GetTouchable()->GetVolume() -> GetLogicalVolume() -> GetName();
-    G4String endVolumeName = endPoint->GetTouchable()->GetVolume() -> GetLogicalVolume() -> GetName();
+    // G4String startVolumeName = startPoint->GetTouchable()->GetVolume() -> GetLogicalVolume() -> GetName();
+    // G4String endVolumeName = endPoint->GetTouchable()->GetVolume() -> GetLogicalVolume() -> GetName();
 
-    trackLength = trackLength + track->GetStepLength() / m;
+    // trackLength = trackLength + track->GetStepLength() / m;
 
     // uncomment for Big Panel Design
     // if(endVolumeName == "Detector_log" && startVolumeName == "Panel_log")
@@ -74,41 +74,41 @@ void ReadoutSimSteppingAction::UserSteppingAction(const G4Step* step)
     ///////////////////////////////////////////////
 
     // If photon inside Left or Right volume, is detected
-    if(endVolumeName == "leftPENLayer_log" && startVolumeName == "Guide_log")
-    {
-        track->SetTrackStatus(fStopAndKill);
-        run->AddDetection();
-        analysisMan->FillNtupleIColumn(7, 1);
-        analysisMan->FillNtupleDColumn(8, trackLength);
-        trackLength = 0.;
-    }
+    // if(endVolumeName == "leftPENLayer_log" && startVolumeName == "Guide_log")
+    // {
+    //     track->SetTrackStatus(fStopAndKill);
+    //     run->AddDetection();
+    //     analysisMan->FillNtupleIColumn(7, 1);
+    //     analysisMan->FillNtupleDColumn(8, trackLength);
+    //     trackLength = 0.;
+    // }
 
-    if(endVolumeName == "rightPENLayer_log" && startVolumeName == "Guide_log")
-    {
-        track->SetTrackStatus(fStopAndKill);
-        run->AddDetection();
-        analysisMan->FillNtupleIColumn(7, 2);
-        analysisMan->FillNtupleDColumn(8, trackLength);
-        trackLength = 0.;
-    }
+    // if(endVolumeName == "rightPENLayer_log" && startVolumeName == "Guide_log")
+    // {
+    //     track->SetTrackStatus(fStopAndKill);
+    //     run->AddDetection();
+    //     analysisMan->FillNtupleIColumn(7, 2);
+    //     analysisMan->FillNtupleDColumn(8, trackLength);
+    //     trackLength = 0.;
+    // }
 
     // If photon inside LAr, kill track
-    if(endVolumeName == "World_log") 
-    {
-        track->SetTrackStatus(fStopAndKill);
-        trackLength = 0.;
-        run->AddLArAbsorption();
-        if(startVolumeName == "Panel_log") run->AddPanelTowardLAr();
-        else if (startVolumeName == "frontPENLayer_log" ||
-                 startVolumeName == "backPENLayer_log"  ||
-                 startVolumeName == "topPENLayer_log"   ||
-                 startVolumeName == "botPENLayer_log"
-                ) run->AddPENTowardLAr();
-        else if (startVolumeName == "Guide_log") run->AddLightGuideTowardLAr();
+    // if(endVolumeName == "World_log") 
+    // {
+    //     track->SetTrackStatus(fStopAndKill);
+    //     trackLength = 0.;
+    //     run->AddLArAbsorption();
+    //     if(startVolumeName == "Panel_log") run->AddPanelTowardLAr();
+    //     else if (startVolumeName == "frontPENLayer_log" ||
+    //              startVolumeName == "backPENLayer_log"  ||
+    //              startVolumeName == "topPENLayer_log"   ||
+    //              startVolumeName == "botPENLayer_log"
+    //             ) run->AddPENTowardLAr();
+    //     else if (startVolumeName == "Guide_log") run->AddLightGuideTowardLAr();
 
-    }
+    // }
 
-    const G4VProcess* pds = endPoint->GetProcessDefinedStep(); 
+    // const G4VProcess* pds = endPoint->GetProcessDefinedStep(); 
 
     // G4cout << "Process: \t" << pds->GetProcessName() << G4endl;
     // G4cout << "Currently in \t" << startVolumeName << G4endl;
@@ -117,28 +117,28 @@ void ReadoutSimSteppingAction::UserSteppingAction(const G4Step* step)
     // G4cout << "Track length: \t" << trackLength << "\n" << G4endl;
 
     // if photon is absorbed, store volume information
-    if(pds->GetProcessName() == "OpAbsorption")
-    {
-        analysisMan->FillNtupleIColumn(7, 0);
-        trackLength = 0.;
-        if(endVolumeName == "Panel_log") run->AddPanelAbsorption();
-        else if(endVolumeName == "Guide_log") run->AddLightGuideAbsorption();
-        else if (endVolumeName == "frontPENLayer_log" ||
-                 endVolumeName == "backPENLayer_log"  ||
-                 endVolumeName == "topPENLayer_log"   ||
-                 endVolumeName == "botPENLayer_log"
-                ) run->AddPenAbsorption();
-        else if (endVolumeName == "frontOuterCladding_log" ||
-                 endVolumeName == "backOuterCladding_log"  ||
-                 endVolumeName == "topOuterCladding_log"   ||
-                 endVolumeName == "botOuterCladding_log"
-                ) run->AddOuterCladdingAbsorption();
-        else if (endVolumeName == "frontInnerCladding_log" ||
-                 endVolumeName == "backInnerCladding_log"  ||
-                 endVolumeName == "topInnerCladding_log"   ||
-                 endVolumeName == "botInnerCladding_log"
-                ) run->AddInnerCladdingAbsorption();
-    }
+    // if(pds->GetProcessName() == "OpAbsorption")
+    // {
+    //     analysisMan->FillNtupleIColumn(7, 0);
+    //     trackLength = 0.;
+    //     if(endVolumeName == "Panel_log") run->AddPanelAbsorption();
+    //     else if(endVolumeName == "Guide_log") run->AddLightGuideAbsorption();
+    //     else if (endVolumeName == "frontPENLayer_log" ||
+    //              endVolumeName == "backPENLayer_log"  ||
+    //              endVolumeName == "topPENLayer_log"   ||
+    //              endVolumeName == "botPENLayer_log"
+    //             ) run->AddPenAbsorption();
+    //     else if (endVolumeName == "frontOuterCladding_log" ||
+    //              endVolumeName == "backOuterCladding_log"  ||
+    //              endVolumeName == "topOuterCladding_log"   ||
+    //              endVolumeName == "botOuterCladding_log"
+    //             ) run->AddOuterCladdingAbsorption();
+    //     else if (endVolumeName == "frontInnerCladding_log" ||
+    //              endVolumeName == "backInnerCladding_log"  ||
+    //              endVolumeName == "topInnerCladding_log"   ||
+    //              endVolumeName == "botInnerCladding_log"
+    //             ) run->AddInnerCladdingAbsorption();
+    // }
 
     return;
 
