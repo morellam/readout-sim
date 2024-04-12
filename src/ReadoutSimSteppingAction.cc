@@ -29,19 +29,33 @@ void ReadoutSimSteppingAction::UserSteppingAction(const G4Step* step)
 {
     // static G4ParticleDefinition* opticalphoton = 
     //             G4OpticalPhoton::OpticalPhotonDefinition();
-    // G4AnalysisManager* analysisMan = G4AnalysisManager::Instance();
+    G4AnalysisManager* analysisMan = G4AnalysisManager::Instance();
 
     // Run* run = static_cast<Run*>(
     //            G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
-    // G4Track* track = step->GetTrack();
-    // G4StepPoint* endPoint   = step->GetPostStepPoint();
-    // G4StepPoint* startPoint = step->GetPreStepPoint();
+    G4Track* track = step->GetTrack();
+    G4StepPoint* endPoint   = step->GetPostStepPoint();
+    G4StepPoint* startPoint = step->GetPreStepPoint();
 
-    // G4String particleName = track->GetDynamicParticle()->GetParticleDefinition()->GetParticleName();
+    G4String particleName = track->GetDynamicParticle()->GetParticleDefinition()->GetParticleName();
 
-    // G4String startVolumeName = startPoint->GetTouchable()->GetVolume() -> GetLogicalVolume() -> GetName();
-    // G4String endVolumeName = endPoint->GetTouchable()->GetVolume() -> GetLogicalVolume() -> GetName();
+    G4String startVolumeName = startPoint->GetTouchable()->GetVolume()->GetName();
+    G4String endVolumeName = endPoint->GetTouchable()->GetVolume()->GetName();
+
+    // G4cout << endPoint->GetProcessDefinedStep()->GetProcessName() << G4endl;
+    // G4cout << endPoint->GetKineticEnergy() / eV << G4endl;
+
+    if(startVolumeName == "Guide_phys" && endVolumeName == "RightDetector_phys")
+    {
+        track->SetTrackStatus(fStopAndKill);
+        analysisMan->FillNtupleIColumn(12, 1);
+    }
+    else if(startVolumeName == "Guide_phys" && endVolumeName == "LeftDetector_phys")
+    {
+        track->SetTrackStatus(fStopAndKill);
+        analysisMan->FillNtupleIColumn(13, 1);
+    }
 
     // trackLength = trackLength + track->GetStepLength() / m;
 

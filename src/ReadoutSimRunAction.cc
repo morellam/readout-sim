@@ -39,10 +39,16 @@ void ReadoutSimRunAction::BeginOfRunAction(const G4Run *aRun)
     man->CreateNtupleDColumn("xPhotonDirection");
     man->CreateNtupleDColumn("yPhotonDirection");
     man->CreateNtupleDColumn("zPhotonDirection");
-    man->CreateNtupleIColumn("photonTrackID");
-    man->CreateNtupleSColumn("finalVolume"); 
-    man->CreateNtupleDColumn("stepLength");
-    man->CreateNtupleDColumn("G4TrackLength");
+    man->CreateNtupleSColumn("initialVolume");
+    man->CreateNtupleSColumn("finalVolume");
+    man->CreateNtupleDColumn("xPhotonFinal");
+    man->CreateNtupleDColumn("yPhotonFinal");
+    man->CreateNtupleDColumn("zPhotonFinal");
+    man->CreateNtupleDColumn("energyFinal");   
+    man->CreateNtupleIColumn("rightDetector");
+    man->CreateNtupleIColumn("leftDetector");    
+    // man->CreateNtupleDColumn("stepLength");
+    // man->CreateNtupleDColumn("G4TrackLength");
 
     man->FinishNtuple(0);
 

@@ -6,6 +6,7 @@
 #include "G4Material.hh"
 #include "G4LogicalVolume.hh"
 #include "G4GenericMessenger.hh"
+#include "G4SystemOfUnits.hh"
 
 class DetectorMessenger;
 
@@ -24,6 +25,7 @@ class ReadoutSimDetectorConstruction : public G4VUserDetectorConstruction
         void DefineCommands();
         void SetOpticalProperties();
         void SetSpace(G4int);
+        void setWLSWrap(G4int);
         void SetWLSBack(G4int);
 
         G4VPhysicalVolume* SetupPanelOnly();
@@ -36,10 +38,11 @@ class ReadoutSimDetectorConstruction : public G4VUserDetectorConstruction
         G4LogicalVolume *fRightPENLayerLogical, *fLeftPENLayerLogical;
         G4LogicalVolume *fTopPENLayerLogical, *fBotPENLayerLogical;
         G4Material *worldMaterial;
-        G4Material *PMMA, *PEN;
+        G4Material *PMMA, *PEN, *WLS_material;
         G4Material *innerCladdingMaterial, *outerCladdingMaterial;
 
         G4double space;
+        G4double layerThickness;
         G4int WLS_y = 1;
         G4int centerGuide = 1;
 

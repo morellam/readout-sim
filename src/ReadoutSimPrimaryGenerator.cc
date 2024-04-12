@@ -23,20 +23,12 @@ ReadoutSimPrimaryGenerator::~ReadoutSimPrimaryGenerator()
 
 void ReadoutSimPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
 {
-    // Run* run = static_cast<Run*>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
-
-    // G4AnalysisManager *man = G4AnalysisManager::Instance();
-
-    // run->AddToTotal();
-
     // set opticalphoton as primary particle
     G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
     G4ParticleDefinition *particle = particleTable->FindParticle("opticalphoton"); 
     fParticleGun->SetParticleDefinition(particle);
 
     // return integers uniformly distributed in [0, n]
-    // G4int surface = surfaceGenerator->Integer(2); // alternative (panel)
-    // G4double surface = surfaceGenerator->Uniform(0., 1.); // baseline
     G4double pi = 3.14159265359;
     G4double u = 0.;
     G4double v = 0.;
@@ -51,14 +43,14 @@ void ReadoutSimPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
     G4double xMom, yMom, zMom;
 
     xPos = xPosGenerator->Uniform(-50., 50.);
-    yPos = -6;
+    yPos = 7.1;
     zPos = zPosGenerator->Uniform(-5., 5.);
 
     u = thetaGenerator->Uniform(-1,1);
     v = phiGenerator->Uniform(-pi/2, pi/2);
 
     xMom = sqrt(1-u*u) * sin(v);
-    yMom = sqrt(1-u*u) * cos(v);
+    yMom = -sqrt(1-u*u) * cos(v);
     zMom = u;
 
     // // Baseline Design
@@ -131,7 +123,7 @@ void ReadoutSimPrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
     G4ThreeVector momentum(xMom, yMom, zMom);
     
     // G4double energy = 2.88 * eV; // optical photon @ 430nm
-    G4double energy = 9.69 * eV; // optical photon @ 128nm
+    G4double energy = 9.69 * eV; // VUV photon @ 128nm
 
     fParticleGun->SetParticlePosition(position);
     fParticleGun->SetParticleMomentumDirection(momentum);
